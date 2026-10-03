@@ -61,10 +61,16 @@ function createGameBoard(cards) {
   return board;
 }
 function createCard(imageName) {
+  const front = document.createElement("div");
+  front.classList.add("card-front");
+  const back = document.createElement("div");
+  back.classList.add("card-back");
   const element = document.createElement("div");
   const image = document.createElement("img");
   image.src = `./assets/${imageName}.png`;
-  element.append(image);
+  front.append(image);
+  element.append(front);
+  element.append(back);
   element.classList.add("card");
   return element;
 }
