@@ -84,17 +84,26 @@ function createCard(imageName) {
       return;
     }
 
+    if (element.classList.contains("matchet")) {
+      return;
+    }
+
     element.classList.add("open");
     if (state.firstCard === null) {
       state.firstCard = element;
     } else {
       state.secondCard = element;
-
+      state.moves += 1;
       state.locked = true;
 
       if (state.firstCard.dataset.name === state.secondCard.dataset.name) {
         console.log("pair");
         state.pairs += 1;
+        if (state.pairs === 8) {
+          alert("you win");
+        }
+        state.firstCard.classList.add("matchet");
+        state.secondCard.classList.add("matchet");
         state.firstCard = null;
         state.secondCard = null;
         state.locked = false;
