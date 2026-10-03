@@ -53,6 +53,7 @@ function createHeader() {
 function createGameBoard(cards) {
   const board = document.createElement("div");
   board.classList.add("board");
+  console.log(cards.length);
   for (let i = 0; i < cards.length; i++) {
     const card = createCard(cards[i]);
     board.append(card);
@@ -66,11 +67,48 @@ function createCard(imageName) {
   const back = document.createElement("div");
   back.classList.add("card-back");
   const element = document.createElement("div");
+  element.dataset.name = imageName;
   const image = document.createElement("img");
   image.src = `./assets/${imageName}.png`;
   front.append(image);
   element.append(front);
   element.append(back);
   element.classList.add("card");
+
+  element.addEventListener("click", () => {
+    if (state.locked) {
+      return;
+    }
+
+    if (element.classList.contains("open")) {
+      return;
+    }
+
+    element.classList.add("open");
+    if (state.firstCard === null) {
+      state.firstCard = element;
+    } else {
+      state.secondCard = element;
+
+      state.locked = true;
+
+      if (state.firstCard.dataset.name === state.secondCard.dataset.name) {
+        console.log("pair");
+        state.pairs += 1;
+        state.firstCard = null;
+        state.secondCard = null;
+        state.locked = false;
+      } else {
+        setTimeout(() => {
+          state.firstCard.classList.remove("open");
+          state.secondCard.classList.remove("open");
+          state.locked = false;
+          state.firstCard = null;
+          state.secondCard = null;
+        }, 2000);
+      }
+    }
+  });
+
   return element;
 }
