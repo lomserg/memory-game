@@ -88,17 +88,13 @@ function createVictoryModal() {
 
   newGameBtn.addEventListener("click", newGame);
   closeBtn.addEventListener("click", closeModal);
-  divModal.addEventListener("click", (e) => {
-    if (e.target === divModal) {
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      console.log(e.key);
       closeModal();
     }
   });
 
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      closeModal();
-    }
-  });
   divContentModal.append(winText, movesText, newGameBtn, closeBtn);
   divModal.append(divContentModal);
   document.body.append(divModal);
@@ -131,7 +127,7 @@ function updateStats() {
   pairElem.textContent = `pair: ${state.pairs}`;
 }
 /*
-newGame()
+newGame
 */
 
 function newGame() {
