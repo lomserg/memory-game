@@ -41,6 +41,7 @@ function init() {
   const board = createGameBoard();
 
   const header = createHeader();
+  createVictoryModal();
   app.append(header, board);
   document.body.append(app);
 }
@@ -66,6 +67,59 @@ function createHeader() {
 }
 
 /*
+create Victory Modal
+
+*/
+
+function createVictoryModal() {
+  const divModal = document.createElement("div");
+  divModal.classList.add("modal");
+  const divContentModal = document.createElement("div");
+  divContentModal.classList.add("modal-content");
+  const winText = document.createElement("p");
+  const movesText = document.createElement("p");
+  movesText.classList.add("movesText");
+  const newGameBtn = document.createElement("button");
+  const closeBtn = document.createElement("button");
+  newGameBtn.textContent = "New game";
+  closeBtn.textContent = "Close";
+  winText.textContent = "You win!";
+  movesText.textContent = `moves: ${state.moves}`;
+
+  newGameBtn.addEventListener("click", newGame);
+  closeBtn.addEventListener("click", closeModal);
+  divModal.addEventListener("click", (e) => {
+    if (e.target === divModal) {
+      closeModal();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closeModal();
+    }
+  });
+  divContentModal.append(winText, movesText, newGameBtn, closeBtn);
+  divModal.append(divContentModal);
+  document.body.append(divModal);
+}
+
+function closeModal() {
+  const modal = document.querySelector(".modal");
+  modal.classList.remove("open");
+  document.body.style.overflow = "";
+}
+function openModal() {
+  const modal = document.querySelector(".modal");
+  const movesText = document.querySelector(".movesText");
+  document.body.style.overflow = "hidden";
+
+  movesText.textContent = `moves: ${state.moves}`;
+
+  modal.classList.add("open");
+}
+
+/*
 updateStats(...)
 */
 
@@ -81,6 +135,8 @@ newGame()
 */
 
 function newGame() {
+  const modal = document.querySelector(".modal");
+  modal.classList.remove("open");
   clearTimeout(state.timerId);
   state.timerId = null;
   //Сбросить firstCard
@@ -157,15 +213,14 @@ function createCard(imageName) {
         console.log("pair");
         state.pairs += 1;
         updateStats();
-        if (state.pairs === 8) {
-          alert("you win");
-          newGame();
-        }
         state.firstCard.classList.add("matched");
         state.secondCard.classList.add("matched");
         state.firstCard = null;
         state.secondCard = null;
         state.locked = false;
+        if (state.pairs === 8) {
+          openModal();
+        }
       } else {
         state.timerId = setTimeout(() => {
           state.firstCard.classList.remove("open");
@@ -173,6 +228,7 @@ function createCard(imageName) {
           state.locked = false;
           state.firstCard = null;
           state.secondCard = null;
+          state.timerId = null;
         }, 1000);
       }
     }
