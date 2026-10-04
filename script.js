@@ -17,6 +17,7 @@ const cardImages = [
   "wolf",
   "tiger",
 ];
+init();
 function shuffle(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const randomIndex = Math.floor(Math.random() * (i + 1)); //12
@@ -42,12 +43,34 @@ function init() {
   app.append(header, board);
   document.body.append(app);
 }
-
-init();
+/*
+// header //
+*/
 function createHeader() {
   const headerElem = document.createElement("header");
   headerElem.classList.add("header-game");
+
+  const movesElem = document.createElement("p");
+  movesElem.classList.add("moves");
+  movesElem.textContent = `moves: ${state.moves}`;
+
+  const pairElem = document.createElement("p");
+  pairElem.classList.add("pair");
+  pairElem.textContent = `pair: ${state.pairs}`;
+  headerElem.append(movesElem, pairElem);
   return headerElem;
+}
+
+/*
+updateStats(...)
+*/
+
+function updateStats() {
+  const movesElem = document.querySelector(".moves");
+  const pairElem = document.querySelector(".pair");
+  console.log(movesElem);
+  movesElem.textContent = `moves: ${state.moves}`;
+  pairElem.textContent = `pair: ${state.pairs}`;
 }
 
 function createGameBoard(cards) {
@@ -61,6 +84,7 @@ function createGameBoard(cards) {
   console.log(board);
   return board;
 }
+
 function createCard(imageName) {
   const front = document.createElement("div");
   front.classList.add("card-front");
@@ -84,7 +108,7 @@ function createCard(imageName) {
       return;
     }
 
-    if (element.classList.contains("matchet")) {
+    if (element.classList.contains("matched")) {
       return;
     }
 
@@ -95,15 +119,16 @@ function createCard(imageName) {
       state.secondCard = element;
       state.moves += 1;
       state.locked = true;
-
+      updateStats();
       if (state.firstCard.dataset.name === state.secondCard.dataset.name) {
         console.log("pair");
         state.pairs += 1;
+        updateStats();
         if (state.pairs === 8) {
           alert("you win");
         }
-        state.firstCard.classList.add("matchet");
-        state.secondCard.classList.add("matchet");
+        state.firstCard.classList.add("matched");
+        state.secondCard.classList.add("matched");
         state.firstCard = null;
         state.secondCard = null;
         state.locked = false;
@@ -114,7 +139,7 @@ function createCard(imageName) {
           state.locked = false;
           state.firstCard = null;
           state.secondCard = null;
-        }, 2000);
+        }, 1000);
       }
     }
   });
