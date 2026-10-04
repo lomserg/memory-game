@@ -5,6 +5,7 @@ const state = {
   moves: 0,
   pairs: 0,
   locked: false,
+  timerId: null,
 };
 
 const cardImages = [
@@ -36,10 +37,10 @@ function createDeck() {
 function init() {
   const app = document.createElement("div");
   app.classList.add("app");
-  const cards = createDeck();
+  // const cards = createDeck();
+  const board = createGameBoard();
 
   const header = createHeader();
-  const board = createGameBoard(cards);
   app.append(header, board);
   document.body.append(app);
 }
@@ -57,7 +58,10 @@ function createHeader() {
   const pairElem = document.createElement("p");
   pairElem.classList.add("pair");
   pairElem.textContent = `pair: ${state.pairs}`;
-  headerElem.append(movesElem, pairElem);
+  const newGameBtn = document.createElement("button");
+  newGameBtn.textContent = "new game";
+  newGameBtn.addEventListener("click", newGame);
+  headerElem.append(movesElem, pairElem, newGameBtn);
   return headerElem;
 }
 
@@ -72,16 +76,44 @@ function updateStats() {
   movesElem.textContent = `moves: ${state.moves}`;
   pairElem.textContent = `pair: ${state.pairs}`;
 }
+/*
+newGame()
+*/
 
-function createGameBoard(cards) {
+function newGame() {
+  clearTimeout(state.timerId);
+  state.timerId = null;
+  //Сбросить firstCard
+  state.firstCard = null;
+  //Сбросить secondCard
+  state.secondCard = null;
+  //Сбросить moves
+  state.moves = 0;
+  //Сбросить pairs
+  state.pairs = 0;
+  //Сбросить locked
+  state.locked = false;
+
+  updateStats();
+  // Создать новое поле
+  const board = document.querySelector(".board");
+  board.replaceWith(createGameBoard());
+}
+
+/*
+createGameBoard()
+*/
+function createGameBoard() {
+  state.cards = createDeck();
   const board = document.createElement("div");
   board.classList.add("board");
-  console.log(cards.length);
-  for (let i = 0; i < cards.length; i++) {
-    const card = createCard(cards[i]);
+  console.log(state.cards.length);
+  for (let i = 0; i < state.cards.length; i++) {
+    const card = createCard(state.cards[i]);
     board.append(card);
   }
   console.log(board);
+  console.log(state.cards);
   return board;
 }
 
@@ -119,6 +151,7 @@ function createCard(imageName) {
       state.secondCard = element;
       state.moves += 1;
       state.locked = true;
+
       updateStats();
       if (state.firstCard.dataset.name === state.secondCard.dataset.name) {
         console.log("pair");
@@ -126,6 +159,7 @@ function createCard(imageName) {
         updateStats();
         if (state.pairs === 8) {
           alert("you win");
+          newGame();
         }
         state.firstCard.classList.add("matched");
         state.secondCard.classList.add("matched");
@@ -133,7 +167,7 @@ function createCard(imageName) {
         state.secondCard = null;
         state.locked = false;
       } else {
-        setTimeout(() => {
+        state.timerId = setTimeout(() => {
           state.firstCard.classList.remove("open");
           state.secondCard.classList.remove("open");
           state.locked = false;
