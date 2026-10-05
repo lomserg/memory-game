@@ -19,6 +19,7 @@ const cardImages = [
   "tiger",
 ];
 init();
+
 function shuffle(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const randomIndex = Math.floor(Math.random() * (i + 1)); //12
@@ -33,7 +34,29 @@ function createDeck() {
   const cards = [...cardImages, ...cardImages];
   return shuffle(cards);
 }
+function compareFn(a, b) {
+  if (a.moves !== b.moves) {
+    return a.moves - b.moves;
+  } else {
+    return new Date(a.date).getTime() - new Date(b.date).getTime();
+  }
+}
 
+function saveResult() {
+  //получили data
+  let rawData = localStorage.getItem("data");
+  let data = rawData ? JSON.parse(rawData) : [];
+
+  //добавили новый результат
+  data.push({
+    moves: state.moves,
+    date: new Date(),
+  });
+  data.sort(compareFn);
+  data = data.slice(0, 10);
+  // здесь сортируем data
+  localStorage.setItem("data", JSON.stringify(data));
+}
 function init() {
   const app = document.createElement("div");
   app.classList.add("app");
@@ -216,6 +239,7 @@ function createCard(imageName) {
         state.locked = false;
         if (state.pairs === 8) {
           openModal();
+          saveResult();
         }
       } else {
         state.timerId = setTimeout(() => {
