@@ -62,8 +62,8 @@ function init() {
   app.classList.add("app");
   // const cards = createDeck();
   const board = createGameBoard();
-
   const header = createHeader();
+  createLeaderboardModal();
   createVictoryModal();
   app.append(header, board);
   document.body.append(app);
@@ -82,13 +82,89 @@ function createHeader() {
   const pairElem = document.createElement("p");
   pairElem.classList.add("pair");
   pairElem.textContent = `pair: ${state.pairs}`;
+
   const newGameBtn = document.createElement("button");
   newGameBtn.textContent = "new game";
   newGameBtn.addEventListener("click", newGame);
-  headerElem.append(movesElem, pairElem, newGameBtn);
+
+  const leaderBoard = document.createElement("button");
+  leaderBoard.textContent = "leaderBoard";
+  leaderBoard.classList.add("leaderBoard");
+  leaderBoard.addEventListener("click", showLeaderboard);
+
+  headerElem.append(movesElem, pairElem, newGameBtn, leaderBoard);
+
   return headerElem;
 }
 
+function showLeaderboard() {
+  console.log("leaderboard click");
+  const rawData = localStorage.getItem("data");
+  const data = rawData ? JSON.parse(rawData) : [];
+  const results = document.querySelector(".leaderboard-results");
+  results.replaceChildren();
+  data.forEach((result, index) => {
+    const item = createLeaderboardItem(result, index + 1);
+    results.append(item);
+  });
+  const modal = document.querySelector(".leaderboard-modal");
+  modal.classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function createLeaderboardModal() {
+  const divModal = document.createElement("div");
+  divModal.classList.add("leaderboard-modal");
+
+  const divContentModal = document.createElement("div");
+  divContentModal.classList.add("leaderboard-modal-content");
+
+  const title = document.createElement("h2");
+  title.textContent = "Leaderboard";
+
+  const results = document.createElement("div");
+  results.classList.add("leaderboard-results");
+
+  const closeBtn = document.createElement("button");
+  closeBtn.textContent = "Close";
+
+  closeBtn.addEventListener("click", () => {
+    divModal.classList.remove("open");
+    document.body.style.overflow = "";
+  });
+
+  divContentModal.append(title, results, closeBtn);
+  divModal.append(divContentModal);
+  document.body.append(divModal);
+}
+
+function createLeaderboardItem(result, place) {
+  const item = document.createElement("div");
+  item.classList.add("leaderboard-item");
+
+  const placeElem = document.createElement("span");
+  placeElem.textContent = place;
+
+  const movesElem = document.createElement("span");
+  movesElem.textContent = result.moves;
+
+  const dateElem = document.createElement("span");
+  dateElem.textContent = formatDate(result.date);
+
+  item.append(placeElem, movesElem, dateElem);
+
+  return item;
+}
+
+function formatDate(date) {
+  const dateObj = new Date(date);
+
+  const day = String(dateObj.getDate()).padStart(2, "0");
+  const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+  const year = dateObj.getFullYear();
+
+  return `${day}.${month}.${year}`;
+}
 /*
 create Victory Modal
 
@@ -96,7 +172,7 @@ create Victory Modal
 
 function createVictoryModal() {
   const divModal = document.createElement("div");
-  divModal.classList.add("modal");
+  divModal.classList.add("victory-modal");
   const divContentModal = document.createElement("div");
   divContentModal.classList.add("modal-content");
   const winText = document.createElement("p");
@@ -124,13 +200,14 @@ function createVictoryModal() {
 }
 
 function closeModal() {
-  const modal = document.querySelector(".modal");
+  const modal = document.querySelector(".victory-modal");
   modal.classList.remove("open");
   document.body.style.overflow = "";
 }
 function openModal() {
-  const modal = document.querySelector(".modal");
+  const modal = document.querySelector(".victory-modal");
   const movesText = document.querySelector(".movesText");
+
   document.body.style.overflow = "hidden";
 
   movesText.textContent = `moves: ${state.moves}`;
@@ -154,7 +231,7 @@ newGame
 */
 
 function newGame() {
-  const modal = document.querySelector(".modal");
+  const modal = document.querySelector(".victory-modal");
   modal.classList.remove("open");
   clearTimeout(state.timerId);
   state.timerId = null;
