@@ -128,10 +128,7 @@ function createLeaderboardModal() {
   const closeBtn = document.createElement("button");
   closeBtn.textContent = "Close";
 
-  closeBtn.addEventListener("click", () => {
-    divModal.classList.remove("open");
-    document.body.style.overflow = "";
-  });
+  closeBtn.addEventListener("click", closeLeaderboard);
 
   divContentModal.append(title, results, closeBtn);
   divModal.append(divContentModal);
@@ -191,6 +188,7 @@ function createVictoryModal() {
     if (e.key === "Escape") {
       console.log(e.key);
       closeModal();
+      closeLeaderboard();
     }
   });
 
@@ -204,6 +202,7 @@ function closeModal() {
   modal.classList.remove("open");
   document.body.style.overflow = "";
 }
+
 function openModal() {
   const modal = document.querySelector(".victory-modal");
   const movesText = document.querySelector(".movesText");
@@ -215,6 +214,11 @@ function openModal() {
   modal.classList.add("open");
 }
 
+function closeLeaderboard() {
+  const modal = document.querySelector(".leaderboard-modal");
+  modal.classList.remove("open");
+  document.body.style.overflow = "";
+}
 /*
 updateStats(...)
 */
